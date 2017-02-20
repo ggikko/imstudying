@@ -1,2 +1,3 @@
 # imstudying
-with ggikko, hanwool and funny :)
+
+with ggikko(jihong), manducku(hanwool) and funny :)
