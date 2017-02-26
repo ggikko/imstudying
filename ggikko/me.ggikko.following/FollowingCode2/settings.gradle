@@ -1,1 +1,1 @@
-include ':app', ':ggikko-compiler'
+include ':app', ':ggikko-compiler', ':ggikko-annotation'
