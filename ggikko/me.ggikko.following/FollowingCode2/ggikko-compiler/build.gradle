@@ -4,7 +4,7 @@ sourceCompatibility = rootProject.ext.sourceCompatibilityVersion
 targetCompatibility = rootProject.ext.targetCompatibilityVersion
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':ggikko-annotation')
     compile deps.autoservice
     compile deps.autocommon
     compile deps.javapoet
