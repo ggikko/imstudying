@@ -2,6 +2,8 @@ package com.ggikko;
 
 import com.google.auto.common.SuperficialValidation;
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
@@ -15,6 +17,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 @AutoService(Processor.class)
