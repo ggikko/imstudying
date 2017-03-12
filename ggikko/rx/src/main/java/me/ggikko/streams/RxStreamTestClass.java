@@ -26,6 +26,7 @@ public class RxStreamTestClass {
                 Iterator<Integer> itr = listMock.iterator();
 
                 public void request(long n) {
+                    log.debug("request");
                     try {
                         while (n-- > 0) {
                             if (itr.hasNext()) {
@@ -45,16 +46,42 @@ public class RxStreamTestClass {
             });
         };
 
+//        Publisher mappub2 = mapOperator(pub, t -> t * 2);
+
         Publisher pubSub = sub -> {
             ExecutorService es = Executors.newSingleThreadExecutor();
             es.execute(() -> pub.subscribe(sub));
         };
 
-        Publisher mapPub = mapOperator(pubSub, t -> t * 3);
+//        Publisher mapPub = mapOperator(pubSub, t -> t * 3);
 
-        mapPub.subscribe(new Subscriber<Integer>()
+        Publisher ope = sub -> {
+            ExecutorService es = Executors.newSingleThreadExecutor();
+//            es.execute(() -> .subscribe(sub));
+            pubSub.subscribe(new Subscriber<Integer>() {
+                @Override
+                public void onSubscribe(Subscription s) {
+                    sub.onSubscribe(s);
+                }
 
-        {
+                @Override
+                public void onNext(Integer integer) {
+                    es.execute(() -> sub.onNext(integer));
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    sub.onError(t);
+                }
+
+                @Override
+                public void onComplete() {
+                    sub.onComplete();
+                }
+            });
+        };
+
+        ope.subscribe(new Subscriber<Integer>() {
             public void onSubscribe(Subscription subscription) {
                 subscription.request(listMock.size());
             }
@@ -74,37 +101,33 @@ public class RxStreamTestClass {
     }
 
     private static Publisher<Integer> mapOperator(Publisher<Integer> pub, Function<Integer, Integer> function) {
-        return new Publisher<Integer>() {
-            @Override
-            public void subscribe(Subscriber<? super Integer> sub) {
-                pub.subscribe(new Subscriber<Integer>() {
-                    @Override
-                    public void onSubscribe(Subscription s) {
-                        sub.onSubscribe(s);
-                    }
+        return sub -> {
+            pub.subscribe(new Subscriber<Integer>() {
+                @Override
+                public void onSubscribe(Subscription s) {
+                    sub.onSubscribe(s);
+                }
 
-                    @Override
-                    public void onNext(Integer t) {
-                        try {
-                            sub.onNext(function.apply(t));
-                        } catch (Exception e) {
-                            sub.onError(e);
-                        }
+                @Override
+                public void onNext(Integer t) {
+                    try {
+                        log.debug(t + "");
+                        sub.onNext(function.apply(t));
+                    } catch (Exception e) {
+                        sub.onError(e);
                     }
+                }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        sub.onError(t);
-                    }
+                @Override
+                public void onError(Throwable t) {
+                    sub.onError(t);
+                }
 
-                    @Override
-                    public void onComplete() {
-                        sub.onComplete();
-                    }
-                });
-            }
+                @Override
+                public void onComplete() {
+                    sub.onComplete();
+                }
+            });
         };
     }
-
-    ;
 }
