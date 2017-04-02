@@ -1,0 +1,145 @@
+
+### 2017/04/02 I am Studying
+@(bucket list)[JavaScript]
+
+**event 객체 관리**
+매개변수가 없는 이벤트 리스너
+```
+function CheckUsername(e){
+    var target = e.target;
+}
+
+var e1 = document.getElementById('username');
+el.addEventListener('blur', checkUserName, false);
+```
+
+매개변수가 있는 이벤트 리스너
+```
+function CheckUserName(e, length){
+    var = taget = e.target;
+}
+
+var el = document.getElementById('username');
+el.addEventListener('blur', function(e){
+    checkUserName(e, 5);
+}, false);
+```
+
+`preventDefault() 메서드`
+브라우저 별로 링크를 클릭하거나 폼을 제출하는 것과 같은 몇 가지 이벤트들은 사용자에게 다른 페이지를 보여줌.
+
+이런 요소들의 기본 동작을 중닥하기 위해서 event의 `preventDefault()` 메서드를 사용
+
+```
+event.preventDefault();
+```
+
+`StopPropagation() 메서드`
+이벤트 버블링을 차단
+```
+event.StopPropagation();
+```
+
+**이벤트 위임**
+이벤트 리스너를 지정하는 요소가 많으면 많을수록 페이지 실행 속도는 느려진다. 이벤트의 흐름을 이용하면 부모 요소를 이용하여 이벤트의 발생을 대기할 수 있다.
+
+자식 요소를 가질 수 있는 요소에 이벤트 리스너를 지정하면 하나의 요소에서 발생하는 이벤트만 처리하면 된다.
+
+이벤트 위임 예제 코드
+```
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8">
+  <head>
+    <title>JavaScript &amp; jQuery</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+  </head>
+  <body>
+    <ul id='ToDoList'>
+        <li class="complete"><a>제주도</a></li>
+        <li class="complete"><a>베트남</a></li>
+        <li class="complete"><a>일본</a></li>
+        <li class="complete"><a>어딘가</a></li>
+        <li class="complete"><a>강원도</a></li>
+    </ul>
+  </body>
+<script>
+      function ItemDone(e){
+        var target, elparent, elgranparent;
+        target = e.target;
+        console.log(target);
+        elparent = target.parentNode;
+        elgranparent = elparent.parentNode;
+        elgranparent.removeChild(elparent);
+      }
+
+      var el = document.getElementById('ToDoList');
+      el.addEventListener('click', ItemDone, false);
+</script>
+</html>
+```
+
+**focus와 blur 이벤트**
+주로 FORM에서 TIP 혹은 Validation이 필요할 때 사용
+```
+focus -> 요소가 포커스를 받았을 때, DOM 노드에서 focus 이벤트가 발생한다
+blur -> 요소가 포커스를 잃을 때, DOM 노드에서 blur 이벤트가 발생한다.
+```
+
+주요 이벤트
+```
+mouseover -> 마우스 커서가 요소의 바깥에서 요소의 영역 안으로 이동할 때 발생
+
+mouseout -> 마우스 커서가 요소의 영역 내에서 움직일 때 발생
+
+keydown -> 사용자가 키보드의 키들 중 하나를 누를 때 발생
+
+keypress -> 사용자가 키를 눌렀다가 떼어서 문자가 화면에 나타나게 되면 발생. 사용자가 회살표 키를 누를 때는 keydown 이벤트가 발생하지만, 이 이벤트는 발생하지 않음. 사용자가 키를 계속 누르고 있으면 이벤트가 반복적으로 발생
+
+keyup -> 사용자가 키보드의 키를 눌렀다 땔 때 발생. keydown 이벤트와 keypress 이벤트는 입력한 문자가 화면에 보이기전에 발생하며, keyup 이벤트는 화면에 문자가 나타난 이후에 발생
+```
+
+keydown(사용자가 키를 누름) -> keypress (사용자가 키를 눌렀거나 누르고 있어서 페이지에 문자가 입력되고 있음) -> keyup(사용자가 키를 뗏다)
+
+어떤 키를 눌렀는지 확인하는 방법
+`event.KeyCode`라는 속성이 있는데, ASCII 코드를 리턴해줌.
+고로 정확하게 확인하고자 하면, `String.fromCharCode(event.KeyCode);`를 사용하면 알 수 있음.
+
+
+
+```
+KeyPress 예제 코드
+
+var el;
+
+function CharCount(e){
+	target = e.target;
+	charlen = document.getElementById('charactersLeft');
+	remain_word = 150 - target.value.length;
+	charlen.textContent = remain_word + ' is remain';
+
+	lastkey = document.getElementById('lastKey');
+	lastkey.textContent = 'last key is ' + String.fromCharCode(e.keyCode);
+}
+
+el =document.getElementById('message');
+el.addEventListener('keypress', CharCount, false);
+```
+
+변형 이벤트와 관찰자
+```
+DOMNodeInserted -> DOM 트리에 노드가 추가될 때 발생
+ex) appendChild(), replaceChild()
+DOMNodeRemoved -> DOM 트리에서 노드가 제거될 때 발생
+ex) removeChild(), replaceChild()
+```
+
+변형 이벤트의 문제점
+- 스크립트를 이용해서 페이지에 많은 변경이 가해지면 엄청난 수의 변형 이벤트가 발생하게 된다. 이로 인해 페이지의 동작이 느려지거나 심한 경우 응답이 없는 것처럼 보여질 수 있음.
+또한 이벤트가 전파되는 동안 DOM의 일부를 조작하는 다른 이벤트 리스너를 호출할 수도 있음
+
+새로운 변형 관찰자
+스크립트의 실행이 완료되면 변경 사항을 한 번에 모아서 전달
+
+
+
